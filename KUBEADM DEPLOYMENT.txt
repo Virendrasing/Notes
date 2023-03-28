@@ -1,0 +1,118 @@
+      sudo apt get update
+      sudo apt get-update
+      lsb_release -a
+      sudo apt-get update
+      lsb_release -a
+     sudo apt-get install -y apt-transport-https ca-certificates curl
+     curl -fsSLo containerd-config.toml   https://gist.githubusercontent.com/oradwell/31ef858de3ca43addef68ff971f459c2/raw/5099df007eb717a11825c3890a0517892fa12dbf/containerd-config.toml
+     sudo mkdir /etc/containerd
+     sudo mv containerd-config.toml /etc/containerd/config.toml
+     curl -fsSLo containerd-1.6.14-linux-amd64.tar.gz   https://github.com/containerd/containerd/releases/download/v1.6.14/containerd-1.6.14-linux-amd64.tar.gz
+     sudo tar Cxzvf /usr/local containerd-1.6.14-linux-amd64.tar.gz
+     sudo curl -fsSLo /etc/systemd/system/containerd.service   https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+     sudo systemctl daemon-reload
+     sudo systemctl enable --now containerd
+     curl -fsSLo runc.amd64   https://github.com/opencontainers/runc/releases/download/v1.1.3/runc.amd64
+     sudo install -m 755 runc.amd64 /usr/local/sbin/runc
+     curl -fsSLo cni-plugins-linux-amd64-v1.1.1.tgz   https://github.com/containernetworking/plugins/releases/download/v1.1.1/cni-plugins-linux-amd64-v1.1.1.tgz
+     sudo mkdir -p /opt/cni/bin
+     sudo tar Cxzvf /opt/cni/bin cni-plugins-linux-amd64-v1.1.1.tgz
+     cat <<EOF | sudo tee /etc/modules-load.d/k8s.conf
+     overlay
+     br_netfilter
+     EOF
+     sudo modprobe -a overlay br_netfilter
+     cat <<EOF | sudo tee /etc/sysctl.d/k8s.conf
+     net.bridge.bridge-nf-call-iptables  = 1
+     net.bridge.bridge-nf-call-ip6tables = 1
+     net.ipv4.ip_forward                 = 1
+     EOF
+     sudo sysctl --system
+     sudo curl -fsSLo /usr/share/keyrings/kubernetes-archive-keyring.gpg   https://packages.cloud.google.com/apt/doc/apt-key.gpg
+     echo "deb [signed-by=/usr/share/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main"   | sudo tee /etc/apt/sources.list.d/kubernetes.list
+     sudo apt-get update
+     sudo apt-get install -y kubelet kubeadm kubectl
+     sudo apt-mark hold kubelet kubeadm kubectl
+     swapon --show
+     sudo swapoff -a
+     sudo sed -i -e '/swap/d' /etc/fstab
+     sudo kubeadm init --pod-network-cidr=10.244.0.0/16
+     mkdir -p $HOME/.kube
+     sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+     sudo chown $(id -u):$(id -g) $HOME/.kube/config
+     kubectl taint nodes --all node-role.kubernetes.io/master-
+     kubectl taint nodes --all node-role.kubernetes.io/control-plane-
+     kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+     curl https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3 | bash
+     helm repo add openebs https://openebs.github.io/charts
+     kubectl create namespace openebs
+     helm --namespace=openebs install openebs openebs/openebs
+     helm repo add bitnami https://charts.bitnami.com/bitnami
+   54  helm install my-release bitnami/redmine   --set=global.storageClass=openebs-hostpath
+   55  kbectl  get nodes
+   56  kbectl  get nodes -A
+   57  kbectl  get pods -A
+   58  kubectl  get pods -A
+   59  kubectl  get svc
+   60  ifconfig
+   61  sudo apt install net-tools
+   62  ifconfig
+   63  kubectl  get pods -A
+   64  kubectl get svc
+   65  kubectl edit svc my-release-redmine
+   66  vim
+   67  sudo apt install vim
+   68  kubectl edit svc my-release-redmine
+   69  kubectl get svc
+   70  kubectl edit svc my-release-redmine
+   71  kubectl get svc
+   72  curl 10.104.128.215 80
+   73  ifconfig
+   74  kubectl get svc
+   75  kubectl get pods -o wide
+   76  kubectl get nodes
+   77  kubectl get ns
+   78  sudo su
+   79  kubectl get ns
+   80  kubectl get pods -n kube-system
+   81  kubectl get pods -n kube-flannel
+   82  kubectl get pods -n openebs
+   83  history
+helm inspect values bitnami/redmine > /tmp/redmine.values
+  110  vi /tmp/redmine.values
+helm upgrade --install redmine bitnami/redmine --values /tmp/redmine.values -n redmine --set=global.storageClass=openebs-hostpath
+  111  helm upgrade --install --generate-name bitnami/redmine --values /tmp/redmine.values -n redmine
+  112  helm upgrade --install bitnami/redmine --values /tmp/redmine.values -n redmine
+  113  helm upgrade --install redmine bitnami/redmine --values /tmp/redmine.values -n redmine
+  114  kubectl get all -n redmine
+  METALLB DEPLOYMENT ON KUBERNETES CLUSTER
+
+IP RANGE GIVE WITH INTERNAL IP NEAR RANGE
+
+kubectl apply -f https://raw.githubusercontent.com/metallb/metallb/v0.13.9/config/manifests/metallb-native.yaml
+
+kubectl get ns
+
+OR
+
+helm repo add metallb https://metallb.github.io/metallb
+helm install metallb metallb/metallb -n metallb-system --create-namespace
+check which vm is suported to call webhook service 
+telnet 10.43.82.115 443
+then create ipadresspool with yaml
+************************
+vi IPAddressPool.yaml
+apiVersion: metallb.io/v1beta1
+kind: IPAddressPool
+metadata:
+  name: first-pool
+  namespace: metallb-system
+spec:
+  addresses:
+  - 192.168.1.240-192.168.1.250
+  197  helm search repo nginx-ingress
+  198  helm install bitnami/nginx-ingress-controller --name nginx-controller --set rbac.create=true
+  199  helm install bitnami/nginx-ingress-controller nginx-controller --set rbac.create=true
+  200  helm install my-nginx bitnami/nginx-ingress-controller --set rbac.create=true
+  201  kubectl get all
+  202  kubectl get pods

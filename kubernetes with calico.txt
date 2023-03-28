@@ -1,0 +1,453 @@
+ON MASTER AND NODE
+
+apt-get update -y  
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo apt-key add -
+cat << EOF | sudo tee /etc/apt/sources.list.d/kubernetes.list
+deb https://apt.kubernetes.io/ kubernetes-xenial main
+EOF
+
+apt-get update -y
+sudo apt-get install -y kubelet=1.21.1-00 kubeadm=1.21.1-00 kubectl=1.21.1-00
+apt-get install docker.io
+sudo apt-mark hold kubelet kubeadm kubectl
+echo "net.bridge.bridge-nf-call-iptables=1" | sudo tee -a /etc/sysctl.conf
+sudo sysctl -p
+
+********************************************************************************************************
+ON MASTER ONLY
+ sudo kubeadm init --pod-network-cidr=192.168.0.0/16
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+  kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
+  
+  kubectl apply -f https://docs.projectcalico.org/v3.14/manifests/calico.yaml
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+  ./helm install my-release bitnami/redmine  --set=global.storageClass=openebs-hostpath
+  
+  
+  wget https://get.helm.sh/helm-v3.8.2-linux-amd64.tar.gz
+tar -zxvf helm-v3.8.2-linux-amd64.tar.gz
+mv linux-amd64/helm /usr/local/bin/helm
+rm -rf helm-canary-linux-amd64.tar.gz
+chmod go-r ~/.kube/config
+helm repo add bitnami https://charts.bitnami.com/bitnami
+helm install my-release bitnami/nginx
+
+kubectl get nodes -o custom-columns=NAME:.metadata.name,TAINTS:.spec.taints
+kubectl taint nodes ip-172-31-80-239 key1=value1:NoSchedule-
+****************************************************************************************************************
+ON NODE TO CONNECT MASTER
+
+
+kubeadm join 172.31.10.172:6443 --token 4j2rb1.crejv7ael5xktu0n --discovery-token-ca-cert-hash sha256:533e5ba399e8a0b5c61b36dd019713c7a5368de137e9599a0551ee4bf87dc0a3
+
+
+kubeadm join 172.31.10.11:6443 --token 20lsuq.sv849um5z1yqeggv --discovery-token-ca-cert-hash sha256:eb30cd4347475f0f168a10e5a6d83370dc12d955f6f7edf410ebbaf14c772010
+
+
+new-
+kubeadm join 172.28.25.191:6443 --token 84i5as.7h2u2ap3t5puu431 \
+        --discovery-token-ca-cert-hash sha256:d04935b1855a0340db6b64685d0ad029054d111df9f51ad5d63199c57136fd1d
+root@w1:/home/i2i# mkdir -p $HOME/.kube
+
+
+kubeadm join 172.31.93.40:6443 --token xdwhk6.5msj0c7v01exiovo --discovery-token-ca-cert-hash sha256:2abb9574845cba709961a3947271f4e94434564fc0947d3e5bd0dc58284517fe
+
+kubeadm join 172.31.80.239:6443 --token q2m2o3.e7sz4st5r3dxlhef --discovery-token-ca-cert-hash sha256:dda90d91639dd89d09e1ac0c098c5451e25dfcf46f8aac021413f008de346fb1
+
+format (kubeadm join 172.31.30.62:6443 --token gqakgk.9suim9v301xq7t32 --discovery-token-ca-cert-hash sha256:d894891963e083160c0b38aa3dc165f0b44730eda84cca3de80ec1e46b8d4516)
+kubeadm join 172.31.31.60:6443 --token ji90s3.zg9p0g1kze2f2y8n --discovery-token-ca-cert-hash sha256:ac702c59d8fae4f6296068a91e09a0211927ec91365e4185a8bc09d691f585cf
+
+kubeadm join 172.31.24.3:6443 --token bmkms6.i7lk8t7meniex8go --discovery-token-ca-cert-hash sha256:50ccddf3ef3686a83e0fd282af02e757444d033ae826c841ddd11fc7122404fd 
+
+kubeadm join 172.31.18.133:6443 --token n9pp96.peqf97hl8k5i1yru --discovery-token-ca-cert-hash sha256:8e80d917d382bb53387c367c32fb2cc697b1f3b8647417ec989a71974d73d962
+
+
+kubeadm join 172.31.24.25:6443 --token 628irm.ttcirdqchbjtse63 --discovery-token-ca-cert-hash sha256:91cd51653ebaeecb3d6b3a3700c7c43e3d35c5350ba8c31d67a3b2412015c69b 
+*************************************************************************************************************************
+Check for pod
+kubectl get pods -n=kube-system
+kubectl get nodes
+kubectl logs -n kube-system calico-node-qstxm
+                                   (for pod logs )
+kubectl get pods --all-namespaces
+kubectl create ns test1
+   1   kubectl create ns test2
+   18  kubectl label ns test name=test1
+   19  kubectl label ns test1 name=test1
+   20  kubectl label ns test2 name=test2
+   21  kubectl create deployment nginx --image=nginx -n=test1
+   22  kubectl create deployment nginx --image=nginx -n=test2
+   23  kubectl expose deployment nginx --port=80 --type=loadbalancer -n=test1
+   24  kubectl expose deployment nginx --port=80 --type=Nodeport -n=test1
+   25  kubectl expose deployment nginx --port=80 --type=NodePort -n=test1
+   26  kubectl expose deployment nginx --port=80 --type=NodePort -n=test2
+kubectl get nodes --show-labels
+  kubectl create deployment nginx --image=nginx
+  kubectl get deployments
+  kubectl get svc
+          Copy the public ip of node and paste on browser
+          (34.201.111.244:32327)
+  kubectl get pods
+
+apt-get install firewalld
+
+firewall-cmd --add-port 179/tcp --zone=public --permanent
+
+firewall-cmd --reload
+
+ON NODE TO CHECK PORT IN YAML FILE
+
+cd /var/lib/kublet/
+cat config.yaml
+AND OPEN THIS PORT FOR READY NODE
+for create pod 
+use this link https://jamesdefabia.github.io/docs/user-guide/simple-nginx/
+*************************************************************************************************************************
+
+deploying nginx container on kubernetes
+kubectl run my-nginx --image=nginx --replicas=2 --port=80
+
+kubectl run sample-nginx –image=nginx –replicas=2 –port=80
+(kuubectl run for create pod 
+Sample-nginx is the name of pod
+--image=nginx this is image
+--replicas=2 this is how many replicas you want
+--port=80 web port)
+Kubectl get pods
+kubectl get deployments
+kubectl get services
+
+to start the pod service and access of container
+kubectl expose deployment my-nginx –port=80 –type=loadbalancer
+kubectl get services
+(put external ip with port on browser)
+ 
+For dataile information of pod use this command
+Kubectl get pods
+Kubectl describe pods pod-name
+Kubectl delete pods pod-name
+
+************************************************************************************************************************
+For upgrade Kubernetes custer
+
+ sudo apt-mark unhold kubeadm kubelet kubectl
+ sudo apt install kubeadm=1.23.12-00 kubectl=1.23.12-00 -y
+ sudo apt install kubelet=1.23.12-00 -y
+ sudo apt-mark hold kubeadm kubelet kubectl
+ sudo systemctl restart kubelet
+ kubectl get nodes
+  
+************************************************************************************************************************
+Ports for calico
+
+ 
+179
+10250
+10248
+80
+8080
+6443
+22
+
+**************************************************************************************************************************
+ FOR POD 
+ 
+   docker pull drupal
+   docker container run -d -it --name drupal drupal:latest 
+   ll
+   vi drupal.yml
+   kubectl get pods
+   kubectl describe pod drupal
+   kubectl get nodes
+   kubectl get services
+   kubectl get svc
+   kubectl get pods
+ 
+ kubectl create -f drupal.yml
+ kubectl create namespace drupal
+ kubectl get namespaces
+ 
+ kubectl create deployment podname(like nginx-depl)
+ 
+ kubectl delete deployment podname(like nginx-depl)
+ 
+ kubectl edit deployment podname(like nginx-depl)
+ 
+ for create pod 
+https://kubernetes.io/docs/concepts/services-networking/connect-applications-service/
+
+
+
+
+
+
+
+
+AAABADLl24KOW/e4zAZTC/pDnBcT1RsORmnqKLuG5K8dgf3m6kWbsyB5EFM4c2Yf8LAOMrJs6qGH3jMzK47pHNtVrZxMkpbcGY40kx2wkV04vsfwQXCnuGF4bA6gBZaiAdXRj/oSxn6MSLXf+ht7eshcDwdQYjRd5Zk6BeFMMOvRYwaibzX2Or/ycDiRRIQM3EoAQzHv+aAjsJx1MxREz0dFOGlHRSbng1iRyl0eKIe470zJKnKKEk35OEfYCGRy+faaEOUjAQvJfxVtUMQxfskwn6KJq2PxCU35wDs9F3CDfqd4TUlmD4wX2rN5T+YjhVK0iHDxdX3rmPtixP6XR0fy+sEAAACBAMnrT8L3PDl6oZMwyD/GM+TZoNMWoNq37Qy2YjhzuFdY5VDMxaFhN+mR/CkQI3plPV6RmpjuQKvfAmNHB0v/BImSgkZxVs4r4zeusq+SCRaWW5zzY41KPgjP+5muCz49Ys0vBEWPkuOdXz9GqAbR/X2LXbNSsFD61Bsj+lyB4Hr5AAAAgQCjjRqyJtC+jt8gZi5YAGkNgZiUtPZ5dS81pK3YntTHbSvnOXm5tyoUJ3JbVtg2HTrk2UIIvPAFpLBagONU4M6P6+mccmZLL0iSb4Mu+jIqGneuVIkfa1L9VX80XZRuyM2GXwavRfaKZ1wvVUcWLI6Zgcq540BN4xdsfFfzCFBJ1QAAAIBK/B7iZvqf7caoJVAPzGdGRtYwJrBpSY41m/6cRJdAQsZ5JWGyLHhxnRNFIWWrzLty3x9p75zW6OWqfwNxE2P0R3/1NJhIsRvgJnxD7ee5SbTSraJfETBuoKwAHr7pDtziG12+I4Yx5KHNM8uCFARoq0dQeogJHQYA4ivD9aMUkQ==
+
+
+
+MIIEowIBAAKCAQEAgQAfcnwiWsXX9G1mhRgzHJxiwO3vzhvJU+4ugucVCsK4JjwArMfVgtRJZ+0PG5IsouoNQDzTBiHEa9cCwbaMuLhe6vBr0QPLgvoR/xwtEpVE+Va3Z06QQbLcDIKHeRLjOfGNIYKTnSm4KJtMK7U6Oha00ztwy2LvGn5jcBz59gplS/VTOIQM6rAshiqSiYi+BpbCnv5lx8ABG6QM/o7HwXNaqDjDx/He0yhcWEQhMPS4rDpvQdjcc80ycy8kXWtM95RSE7NiuddIese1lmIb/gApQosC6R4Vns9mKxiMo+OWW813LpfkVt1TAHmXnujd0qqZXAv5UzcmxqNaSKdSLQIDAQABAoIBADLl24KOW/e4zAZTC/pDnBcT1RsORmnqKLuG5K8dgf3m6kWbsyB5EFM4c2Yf8LAOMrJs6qGH3jMzK47pHNtVrZxMkpbcGY40kx2wkV04vsfwQXCnuGF4bA6gBZaiAdXRj/oSxn6MSLXf+ht7eshcDwdQYjRd5Zk6BeFMMOvRYwaibzX2Or/ycDiRRIQM3EoAQzHv+aAjsJx1MxREz0dFOGlHRSbng1iRyl0eKIe470zJKnKKEk35OEfYCGRy+faaEOUjAQvJfxVtUMQxfskwn6KJq2PxCU35wDs9F3CDfqd4TUlmD4wX2rN5T+YjhVK0iHDxdX3rmPtixP6XR0fy+sECgYEAyetPwvc8OXqhkzDIP8Yz5Nmg0xag2rftDLZiOHO4V1jlUMzFoWE36ZH8KRAjemU9XpGamO5Aq98CY0cHS/8EiZKCRnFWzivjN66yr5IJFpZbnPNjjUo+CM/7ma4LPj1izS8ERY+S451fP0aoBtH9fYtds1KwUPrUGyP6XIHgevkCgYEAo40asibQvo7fIGYuWABpDYGYlLT2eXUvNaSt2J7Ux20r5zl5ubcqFCdyW1bYNh065NlCCLzwBaSwWoDjVODOj+vpnHJmSy9Ikm+DLvoyKhp3rlSJH2tS/VV/NF2UbsjNhl8Gr0X2imdcL1VHFiyOmYHKueNATeMXbHxX8whQSdUCgYEAo9Qu9SuQS7q6Gij8cPIp7Ma+/EZh4NRWm3fnnZIWwZg5ByP+PgAZU4PFKrQTdR1re6172BWHl2vsDgz1WK3jSpP665jOK53kT6uJA3bjtNXuIxw/a8YPKytFIt3Z9XftEDnTp3TkY5WuUDLN5iq/F/vZ3MN8l1fMfPDmE+S09FECgYBxuPHxInBPsISRwLtE0bQ6gfyYmmQv/D3BbSq8z2Rg7xZyB1MOwb/ul6c6v95Dcnu7GR6DeOzk36kIpUptgIvhI0cjU6CxcsVhnUx4Y9xxzkmd3IYkZLomEUcMIG3Pwqy2XGkHgvx1LH27I+70CjN1pfxS2SOjhN6KvsNg6Ez7qQKBgEr8HuJm+p/txqglUA/MZ0ZG1jAmsGlJjjWb/pxEl0BCxnklYbIseHGdE0UhZavMu3LfH2nvnNbo5ap/A3ETY/RHf/U0mEixG+AmfEPt57lJtNKtol8RMG6grAAevukO3OIbXb4jhjHkoc0zy4IUBGirR1B6iAkdBgDiK8P1oxSR
+
+
+
+kubectl describe pod calico-node-ckgdw or kubectl logs calico-node-ckgdw
+
+
+
+
+for create kubernetes cluster
+https://www.codegravity.com/blog/installing-kubernetes-cluster-linux
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+ 78  cat <<EOF | sudo tee /etc/yum.repos.d/kubernetes.repo
+[kubernetes]
+name=Kubernetes
+baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-\$basearch
+enabled=1
+gpgcheck=1
+gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+exclude=kubelet kubeadm kubectl
+EOF
+
+   79  cd /etc/yum.repos.d/kubernetes.repo 
+   80  cat /etc/yum.repos.d/kubernetes.repo 
+   81  sudo setenforce 0
+   82  sudo sed -i 's/^SELINUX=enforcing$/SELINUX=permissive/' /etc/selinux/config
+   83  yum update
+   84  sudo yum install -y kubelet kubeadm kubectl --disableexcludes=kubernetes
+   85  systemctl status kubelet
+   86  systemctl status kubeadm
+   87  kubeadm config images pull
+   
+   kubeadm version
+   63  sudo kubeadm reset -f
+   64  sudo kubeadm init phase certs all
+   65  sudo kubeadm init phase kubeconfig all
+   66   kubeadm init --pod-network-cidr=192.168.0.0/16
+   
+   
+   kubeadm join 172.31.35.91:6443 --token b9men1.bls134ylgqtt4t4k --discovery-token-ca-cert-hash sha256:42f3c9550531dbc593776ca05a6bf7d9dbe4ee6d52be8e99c8f912b6fd2d17a7 
+   
+   
+   1  yum updTE
+    2  yum update
+    3   aws iam list user
+    4  curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    5  unzip awscliv2.zip
+    6  sudo ./aws/install
+    7  /usr/local/bin/aws --version
+    8  aws iam list-users
+    9  aws configure
+   10  aws iam list-users
+   11  curl -Lo aws-iam-authenticator https://github.com/kubernetes-sigs/aws-iam-authenticator/releases/download/v0.5.9/aws-iam-authenticator_0.5.9_linux_amd64
+   12  chmod +x ./aws-iam-authenticator
+   13  mkdir -p $HOME/bin && cp ./aws-iam-authenticator $HOME/bin/aws-iam-authenticator && export PATH=$PATH:$HOME/bin
+   14  aws-iam-authenticator help
+   15  curl -o kubectl https://s3.us-west-2.amazonaws.com/amazon-eks/1.23.7/2022-06-29/bin/linux/amd64/kubectl
+   16  chmod +x ./kubectl
+   17  mkdir -p $HOME/bin && cp ./kubectl $HOME/bin/kubectl && export PATH=$PATH:$HOME/bin
+   18  kubectl version --short --client
+   19  kubectl get nodes
+   kubectl version --client -o yaml
+   
+   **************************************************************************************************************
+   aws eks --region us-east-1 update-kubeconfig --name eks-services  --role-arn arn:aws:iam::933005903425:user/admin
+   
+   aws eks --region us-east-1 describe-cluster --name eks-services --query cluster.status
+
+   aws eks --region us-east-1 update-kubeconfig --name eks-services    
+   
+   *******************************************************************************************************
+   AWS CLI INSTALLATION
+   
+   curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64-2.0.30.zip" -o "awscliv2.zip"
+   unzip awscliv2.zip
+   sudo ./aws/install
+   /usr/local/bin/aws --version
+   ********************************************************************************************************
+   on command promt 
+   
+   
+   aws configure 
+   access key and secret key
+   
+   curl -o kubectl.exe https://s3.us-west-2.amazonaws.com/amazon-eks/1.22.6/2022-03-09/bin/windows/amd64/kubectl.exe
+   
+   kubectl
+   
+   aws eks --region us-east-1 describe-cluster --name EKS-CLUSTER --query cluster.status
+   
+   aws eks --region us-east-1 update-kubeconfig --name EKS-CLUSTER
+   
+   kubectl get svc
+   kubectl get nodes --watch
+   kubectl get nodes
+   kubectl get pods -n=kube-system
+   
+  *********************************************************************************************************************** 
+FOR POD URL https://www.youtube.com/watch?v=MFXrypMu6KU
+
+  FOR CREATE PODS
+       kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0
+  204  kubectl get pods
+  205  kubectl get pods -o wide
+  206  kubectl get nodes
+  207  kubectl describe pod my-first-pod 
+  208  kubectl delete pod my-first-pod
+  
+  **********************************************************************************************************************
+  FOR EXPOSE POD AS A SERVICES
+  
+   kubectl run my-first-pod --image stacksimplify/kubenginx:1.0.0 
+   kubectl get pods
+   kubectl expose pod my-first-pod --type=NodePort --port=80 --name=my-second-service
+   kubectl get service
+   kubectl get nodes -o wide
+   
+  FOR DELETE SERVICE 
+   kubectl delete services drupal-service
+  
+  FOR DELETE POD 
+    kubectl delete deployment podname 
+   
+   open nodeport like 32649 to averywhere and run node_public_ip with port 184.72.101.27:32649
+   
+   NAME                TYPE           CLUSTER-IP       EXTERNAL-IP     PORT(S)          AGE
+drupal              NodePort       10.100.103.174   <none>                                                                    80:30080/TCP     37h
+drupal-service      LoadBalancer   10.100.254.54                       8080:32415/TCP   43h
+kubernetes          ClusterIP      10.100.0.1       <none>             443/TCP          2d23h
+my-second-service   NodePort       10.100.152.178   <none>             80:32649/TCP     118s
+  
+  ***********************************************************************************************************************
+  FOR EXPOSE POD AS A NODEPORT SERVICE 
+   OPEN NODEPORT IN AVERYWHER
+[root@ip-172-31-83-198 drupal]# kubectl expose pod nginx-deployment-9456bbbf9-7svcr --type=NodePort --port=80 --name=my-first-service
+service/my-first-service exposed
+
+
+[root@ip-172-31-83-198 drupal]# kubectl get service
+NAME                TYPE           CLUSTER-IP       EXTERNAL-IP   PORT(S)          AGE
+drupal              NodePort       10.100.103.174   <none>        80:30080/TCP     38h
+drupal-service      LoadBalancer   10.100.254.54                  8080:32415/TCP   43h
+kubernetes          ClusterIP      10.100.0.1       <none>        443/TCP          2d23h
+my-first-service    NodePort       10.100.207.157   <none>        80:32057/TCP     24s
+my-second-service   NodePort       10.100.152.178   <none>        80:32649/TCP     31m
+
+
+[root@ip-172-31-83-198 drupal]# kubectl get pods -o wide
+NAME                               READY   STATUS    RESTARTS   AGE   IP                NODE                              NOMINATED NODE   READINESS GATES
+my-first-pod                       1/1     Running   0          35m   192.168.146.136   ip-192-168-143-45.ec2.internal    <none>           <none>
+nginx-deployment-9456bbbf9-7svcr   1/1     Running   0          43h   192.168.164.194   ip-192-168-143-45.ec2.internal    <none>           <none>
+nginx-deployment-9456bbbf9-8bnjr   1/1     Running   0          43h   192.168.8.151     ip-192-168-23-55.ec2.internal     <none>           <none>
+nginx-deployment-9456bbbf9-n76cn   1/1     Running   0          43h   192.168.73.250    ip-192-168-64-167.ec2.internal    <none>           <none>
+nginx-deployment-9456bbbf9-pk254   1/1     Running   0          43h   192.168.251.132   ip-192-168-196-191.ec2.internal   <none>           <none>
+[root@ip-172-31-83-198 drupal]# 
+
+********************************************************************************************************************************
+FOR CHECK POD LOGS
+
+kubectl logs <pod name>
+
+****************************************************************************************************************************
+
+CONNECT TO CONTAINER IN A POD 
+
+kubectl exec -it <pod name> -- /bin/bash
+
+(kubectl exec -it my-first-pod -- /bin/bash)
+
+command which execute in pod are 
+       ls
+	   cd /usr/share/nginx/html/
+	   cat index.html
+	   exit
+ kubectl cp nginx-conf/ drupal-57696849fc-6tgtd:/var/
+ kubectl cp nginx-conf/ drupal-57696849fc-6tgtd:/var/www/html/
+ kubectl exec -it drupal-57696849fc-6tgtd -- /bin/bash
+
+	   
+TO CHECK WITHOUT ENTER IN CONTAINER BY THIS COMMAND
+
+kubectl exec -it <pod-name> env
+kubectl exec -it <pod-name> cat /usr/share/nginx/html/index.html	   
+
+
+GET YAML OUPUT OF REGARDING POD 
+
+kubectl get pod <pod-name> -o yaml
+
+kubectl get service <service-name> -o yaml	 
+************************************************************************************************************************
+
+FOR DRUPAL UPDATE URL
+https://www.drupal.org/project/drupal/releases  
+
+************************************************************************************************************************
+● List namespaces with kubectl:
+○ kubectl get namespaces
+○ kubectl get ns
+● Create your own:
+○ kubectl create ns flask
+● Specify a namespace with kubectl:
+○ kubectl -n flask get all
+
+
+
+docker pull drupal:7.92-php8.0-fpm-bullseye
+
+kubectl run my-third-pod --image drupal:7.92-php8.0-fpm-bullseye
+
+kubectl expose pod my-third-pod --type=NodePort --port=80 --name=my-third-service
+
+kubectl create deployment my-first-deployment --image=drupal:7.92-php8.0-fpm-bullseye
+
+kubectl expose deployment drupal --type=LoadBalancer --port=80 --name=my-second-service
+
+
+
+
+
+Your Kubernetes control-plane has initialized successfully!
+
+To start using your cluster, you need to run the following as a regular user:
+
+  mkdir -p $HOME/.kube
+  sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+  sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+Alternatively, if you are the root user, you can run:
+
+  export KUBECONFIG=/etc/kubernetes/admin.conf
+
+You should now deploy a pod network to the cluster.
+Run "kubectl apply -f [podnetwork].yaml" with one of the options listed at:
+  https://kubernetes.io/docs/concepts/cluster-administration/addons/
+
+Then you can join any number of worker nodes by running the following on each as root:
+
+kubeadm join 172.28.25.191:6443 --token 6erygx.uusmlas3f2m0ed6a \
+        --discovery-token-ca-cert-hash sha256:7f1a1a7f7b61c7e09fddb023566d9db1488e84547b16bad01c8aaed14448801f
